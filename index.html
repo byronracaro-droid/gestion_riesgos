@@ -3,250 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador Web de Gestión de Riesgos - Auditoría de Sistemas de Aplicación</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Simulador de Monte Carlo para Auditoría Informática</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #3b82f6;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --accent: #eff6ff;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 750px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        h1 {
+            color: var(--primary);
+            font-size: 24px;
+            margin-top: 0;
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 10px;
+        }
+        .methodology-section {
+            background-color: var(--accent);
+            border-left: 4px solid var(--secondary);
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .methodology-section h2 {
+            margin-top: 0;
+            font-size: 16px;
+            color: var(--primary);
+        }
+        .methodology-section ul {
+            margin: 5px 0 0 0;
+            padding-left: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 15px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+        button {
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: var(--secondary);
+        }
+        .results-box {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            display: none;
+        }
+        .results-box h2 {
+            margin-top: 0;
+            font-size: 18px;
+            color: var(--primary);
+        }
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .metric:last-child {
+            border-bottom: none;
+        }
+        .metric-val {
+            font-weight: bold;
+            color: var(--primary);
+        }
+    </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans min-h-screen">
+<body>
 
-    <header class="bg-blue-900 text-white shadow-md p-6">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <div>
-                <h1 class="text-2xl font-bold tracking-tight">Simulador de Gestión de Riesgos Cuantitativos</h1>
-                <p class="text-sm text-blue-200 mt-1">Especializado en Auditoría de Sistemas de Aplicación (Enfoque Estocástico)</p>
-            </div>
-            <span class="bg-blue-800 text-blue-200 text-xs px-3 py-1.5 rounded-full border border-blue-700 font-mono">Horizonte 2026 v2.0</span>
+<div class="container">
+    <h1>Simulador de Monte Carlo Sencillo</h1>
+    
+    <div class="methodology-section">
+        <h2>Breve Descripción Metodológica</h2>
+        <p>
+            La <strong>Simulación de Monte Carlo</strong> es un método cuantitativo que modela la incertidumbre transformando variables rígidas en rangos probabilísticos. En auditoría informática, se utiliza la <strong>Distribución Triangular</strong> basada en tres escenarios estimados por el experto:
+        </p>
+        <ul>
+            <li><strong>Mínimo:</strong> El impacto económico más bajo en condiciones optimistas.</li>
+            <li><strong>Más Probable:</strong> El valor que ocurre con mayor frecuencia (Moda).</li>
+            <li><strong>Máximo:</strong> El peor impacto financiero posible (Escenario Catastrófico).</li>
+        </ul>
+        <p style="margin-bottom:0; margin-top:8px;">
+            Al presionar el botón, el algoritmo genera de manera inmediata <strong>1,000 iteraciones aleatorias</strong> aplicando la función inversa acumulada para proyectar el comportamiento financiero global del riesgo evaluado.
+        </p>
+    </div>
+
+    <div class="form-group">
+        <label for="risk-name">Nombre del Riesgo Tecnológico:</label>
+        <input type="text" id="risk-name" placeholder="Ej. Fuga de datos / Caída del servidor de producción">
+    </div>
+
+    <div class="grid-3">
+        <div class="form-group">
+            <label for="val-min">Impacto Mínimo ($):</label>
+            <input type="number" id="val-min" value="1000">
         </div>
-    </header>
-
-    <main class="max-w-7xl mx-auto p-4 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        <div class="lg:col-span-2 space-y-8">
-            
-            <section class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                <h2 class="text-lg font-semibold text-gray-900 border-b border-gray-100 pb-3 mb-4 flex items-center gap-2">
-                    <span class="p-1.5 bg-blue-100 text-blue-900 rounded-md text-sm">01</span> Datos del Sistema de Aplicación Auditado
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Nombre de la Aplicación</label>
-                        <input type="text" id="appNombre" placeholder="Ej. Core Bancario, ERP, Sistema de Facturación..." class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Módulo / Proceso Crítico</label>
-                        <input type="text" id="appModulo" placeholder="Ej. Transacciones, Autenticación, Base de datos..." class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                </div>
-            </section>
-
-            <section class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                <h2 class="text-lg font-semibold text-gray-900 border-b border-gray-100 pb-3 mb-4 flex items-center gap-2">
-                    <span class="p-1.5 bg-blue-100 text-blue-900 rounded-md text-sm">02</span> Análisis Cuantitativo del Escenario de Riesgo
-                </h2>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Definición de la Amenaza / Vulnerabilidad Detectada</label>
-                        <textarea id="riesgoDef" rows="2" placeholder="Describa el hallazgo de auditoría informática (ej. Inyección SQL debido a falta de sanitización)..." class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Probabilidad de Ocurrencia Anual (0.01 a 1.0)</label>
-                            <input type="number" id="probabilidad" step="0.01" min="0.01" max="1" placeholder="Ej. 0.35 para 35% de probabilidad al año" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-100 flex items-center">
-                            <p class="text-xs text-gray-500">Nota: El simulador utiliza una <strong>Distribución Triangular</strong> para el impacto financiero, capturando la incertidumbre real de los dolores organizacionales de TI.</p>
-                        </div>
-                    </div>
-
-                    <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100 grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-blue-900 uppercase tracking-wider mb-1">Impacto Mínimo ($)</label>
-                            <input type="number" id="impMin" placeholder="Escenario optimista" class="w-full px-3 py-2 border border-blue-200 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-blue-900 uppercase tracking-wider mb-1">Impacto Más Probable ($)</label>
-                            <input type="number" id="impMed" placeholder="Costo estándar del fallo" class="w-full px-3 py-2 border border-blue-200 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-blue-900 uppercase tracking-wider mb-1">Impacto Máximo ($)</label>
-                            <input type="number" id="impMax" placeholder="Pérdida catastrófica" class="w-full px-3 py-2 border border-blue-200 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                <h2 class="text-lg font-semibold text-gray-900 border-b border-gray-100 pb-3 mb-4 flex items-center gap-2">
-                    <span class="p-1.5 bg-blue-100 text-blue-900 rounded-md text-sm">03</span> Tratamiento de Riesgo (Salvaguarda Propuesta)
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="md:col-span-2">
-                        <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Control de Mitigación Recomendado</label>
-                        <input type="text" id="controlNombre" placeholder="Ej. Implementación de Web Application Firewall (WAF) y parches automáticos..." class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Costo de Inversión del Control ($)</label>
-                        <input type="number" id="controlCosto" placeholder="Inversión Capex/Opex" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Porcentaje de Eficacia Esperada (1% a 100%)</label>
-                        <input type="number" id="controlEficacia" min="1" max="100" placeholder="Ej. 85 para mitigar el 85% del riesgo" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                </div>
-
-                <div class="mt-6 border-t border-gray-100 pt-4 flex justify-end">
-                    <button onclick="ejecutarSimulacion()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2.5 rounded-lg shadow-sm transition-all flex items-center gap-2 cursor-pointer">
-                        ⚡ Ejecutar Simulación de Monte Carlo
-                    </button>
-                </div>
-            </section>
+        <div class="form-group">
+            <label for="val-probable">Más Probable ($):</label>
+            <input type="number" id="val-probable" value="5000">
         </div>
-
-        <div class="space-y-8">
-            
-            <section class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Métricas del Escenario</h3>
-                
-                <div class="space-y-4">
-                    <div class="border-l-4 border-amber-500 bg-amber-50 p-3 rounded-r-lg">
-                        <span class="block text-xs text-amber-700 font-medium">Riesgo Inherente Estimado (Promedio)</span>
-                        <span id="txtRiesgoIn" class="text-xl font-bold text-amber-900 font-mono">$0.00</span>
-                    </div>
-                    <div class="border-l-4 border-green-500 bg-green-50 p-3 rounded-r-lg">
-                        <span class="block text-xs text-green-700 font-medium">Riesgo Residual Esperado</span>
-                        <span id="txtRiesgoRes" class="text-xl font-bold text-green-900 font-mono">$0.00</span>
-                    </div>
-                    <div class="border-l-4 border-blue-500 bg-blue-50 p-3 rounded-r-lg">
-                        <span class="block text-xs text-blue-700 font-medium">Retorno de Inversión de Control (ROI)</span>
-                        <span id="txtROI" class="text-xl font-bold text-blue-900 font-mono">0.0%</span>
-                    </div>
-                </div>
-            </section>
-
-            <section class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                <h3 class="text-sm font-semibold text-gray-900 mb-2">Distribución Acumulada de Pérdidas</h3>
-                <p class="text-xs text-gray-500 mb-4">Frecuencia de escenarios de pérdida económica sobre 1,000 iteraciones computacionales simuladas.</p>
-                <div class="w-full relative h-64">
-                    <canvas id="graficoSimulacion"></canvas>
-                </div>
-            </section>
+        <div class="form-group">
+            <label for="val-max">Impacto Máximo ($):</label>
+            <input type="number" id="val-max" value="20000">
         </div>
-    </main>
+    </div>
 
-    <footer class="bg-gray-950 text-gray-500 text-xs py-8 px-6 text-center mt-12 border-t border-gray-900">
-        <p>Simulador para la Gestión de Riesgos Cuantitativos en Sistemas de Información. Desarrollado para acceso público inmediato.</p>
-    </footer>
+    <button onclick="ejecutarSimulacion()">Ejecutar 1,000 Simulaciones</button>
 
-    <script>
-        let histogramaChart = null;
+    <div class="results-box" id="results">
+        <h2>Resultados del Análisis de Exposición</h2>
+        <div class="metric">
+            <span>Riesgo Analizado:</span>
+            <span class="metric-val" id="res-name">-</span>
+        </div>
+        <div class="metric">
+            <span>Impacto Promedio Esperado (Media):</span>
+            <span class="metric-val" id="res-media">$0.00</span>
+        </div>
+        <div class="metric">
+            <span>Escenario Crítico de Pérdida (Percentil 95):</span>
+            <span class="metric-val" id="res-p95">$0.00</span>
+        </div>
+    </div>
+</div>
 
-        // Función para muestrear de una Distribución Triangular de probabilidad
-        function randomTriangular(min, mode, max) {
-            const u = Math.random();
-            const F = (mode - min) / (max - min);
-            if (u < F) {
-                return min + Math.sqrt(u * (max - min) * (mode - min));
+<script>
+    function ejecutarSimulacion() {
+        const nombre = document.getElementById('risk-name').value || "Riesgo no especificado";
+        const min = parseFloat(document.getElementById('val-min').value);
+        const mod = parseFloat(document.getElementById('val-probable').value);
+        const max = parseFloat(document.getElementById('val-max').value);
+
+        // Validación técnica de los parámetros de orden obligatorios
+        if (isNaN(min) || isNaN(mod) || isNaN(max) || min > mod || mod > max) {
+            alert("Error matemático: Por favor valida que los valores sigan la regla (Mínimo ≤ Más Probable ≤ Máximo).");
+            return;
+        }
+
+        const iteraciones = 1000;
+        let resultados = [];
+        let sumaTotal = 0;
+
+        // Bucle de muestreo aleatorio (Algoritmo Monte Carlo)
+        for (let i = 0; i < iteraciones; i++) {
+            let u = Math.random();
+            let corte = (mod - min) / (max - min);
+            let valorSimulado = 0;
+
+            if (u < corte) {
+                valorSimulado = min + Math.sqrt(u * (max - min) * (mod - min));
             } else {
-                return max - Math.sqrt((1 - u) * (max - min) * (max - mode));
-            }
-        }
-
-        function ejecutarSimulacion() {
-            // Capturar datos sanitizados desde los inputs de la UI
-            const app = document.getElementById('appNombre').value || "Aplicación";
-            const prob = parseFloat(document.getElementById('probabilidad').value);
-            const min = parseFloat(document.getElementById('impMin').value);
-            const med = parseFloat(document.getElementById('impMed').value);
-            const max = parseFloat(document.getElementById('impMax').value);
-            const costoCtrl = parseFloat(document.getElementById('controlCosto').value) || 0;
-            const eficCtrl = parseFloat(document.getElementById('controlEficacia').value) || 0;
-
-            // Validación estricta de variables matemáticas
-            if (isNaN(prob) || isNaN(min) || isNaN(med) || isNaN(max)) {
-                alert("Por favor, ingrese todos los parámetros obligatorios del Escenario de Riesgo (Sección 02).");
-                return;
-            }
-            if (min > med || med > max || min >= max) {
-                alert("Error de consistencia estadística: El impacto Mínimo debe ser menor que el Más Probable, y este menor que el Máximo.");
-                return;
+                valorSimulado = max - Math.sqrt((1 - u) * (max - min) * (max - mod));
             }
 
-            // Matrices de almacenamiento para las iteraciones estocásticas
-            let pérdidasSimuladas = [];
-            let sumaPérdidas = 0;
-
-            const iteraciones = 1000;
-
-            for (let i = 0; i < iteraciones; i++) {
-                // Verificar si la amenaza se materializa en esta iteración según la probabilidad configurada
-                if (Math.random() <= prob) {
-                    let costoImpacto = randomTriangular(min, med, max);
-                    pérdidasSimuladas.push(costoImpacto);
-                    sumaPérdidas += costoImpacto;
-                } else {
-                    pérdidasSimuladas.push(0); // Escenario donde no hubo falla ni brecha de seguridad
-                }
-            }
-
-            // Cálculos Cuantitativos Clave
-            const promedioInherente = sumaPérdidas / iteraciones;
-            const factorMitigacion = (eficCtrl / 100);
-            const promedioResidual = promedioInherente * (1 - factorMitigacion);
-            const beneficioEconómico = promedioInherente - promedioResidual;
-            const roi = costoCtrl > 0 ? ((beneficioEconómico - costoCtrl) / costoCtrl) * 100 : 0;
-
-            // Actualizar Componentes de la Interfaz (Outputs)
-            document.getElementById('txtRiesgoIn').innerText = `$${promedioInherente.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-            document.getElementById('txtRiesgoRes').innerText = `$${promedioResidual.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-            document.getElementById('txtROI').innerText = `${roi.toFixed(1)}%`;
-
-            // Procesar datos para renderizar el Histograma con Chart.js
-            const rangosClasificacion = 10;
-            let limitesGrupales = [];
-            let conteoGrupales = Array(rangosClasificacion).fill(0);
-            const anchoRango = (max - 0) / rangosClasificacion;
-
-            for (let r = 0; r < rangosClasificacion; r++) {
-                limitesGrupales.push(`$${Math.round(r * anchoRango).toLocaleString()}`);
-            }
-
-            pérdidasSimuladas.forEach(val => {
-                let index = Math.floor(val / anchoRango);
-                if (index >= rangosClasificacion) index = rangosClasificacion - 1;
-                if (index >= 0) conteoGrupales[index]++;
-            });
-
-            // Destruir instancias previas del gráfico si existen para evitar sobreescritura visual
-            if (histogramaChart) {
-                histogramaChart.destroy();
-            }
-
-            const ctx = document.getElementById('graficoSimulacion').getContext('2d');
-            histogramaChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: limitesGrupales,
-                    datasets: [{
-                        label: 'Frecuencia de Escenarios',
-                        data: conteoGrupales,
-                        backgroundColor: 'rgba(30, 58, 138, 0.75)',
-                        borderColor: 'rgb(30, 58, 138)',
-                        borderWidth: 1,
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: '#f3f4f6' } },
-                        x: { grid: { display: false } }
-                    }
-                }
-            });
-        }
-    </script>
-</body>
-</html>
+            resultados.push(valorSimulado);
+            sumaTotal += valor
