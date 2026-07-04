@@ -3,50 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestor de Riesgos y Mapa de Calor</title>
+    <title>Simulador de Monte Carlo para Auditoría Informática</title>
     <style>
         :root {
-            --primary: #1e293b;
+            --primary: #1e3a8a;
             --secondary: #3b82f6;
-            --light: #f8fafc;
-            --border: #e2e8f0;
-            --bajo: #2ecc71;
-            --medio: #f1c40f;
-            --critico: #e74c3c;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --accent: #eff6ff;
         }
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--light);
-            color: var(--primary);
+            color: var(--dark);
             margin: 0;
             padding: 20px;
         }
         .container {
-            max-width: 1000px;
+            max-width: 750px;
             margin: 0 auto;
             background: white;
-            padding: 25px;
+            padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
-        h1, h2 {
+        h1 {
+            color: var(--primary);
+            font-size: 24px;
             margin-top: 0;
-            color: #0f172a;
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 10px;
         }
-        .layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-top: 20px;
+        .methodology-section {
+            background-color: var(--accent);
+            border-left: 4px solid var(--secondary);
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            font-size: 14px;
+            line-height: 1.6;
         }
-        @media (max-width: 768px) {
-            .layout { grid-template-columns: 1fr; }
+        .methodology-section h2 {
+            margin-top: 0;
+            font-size: 16px;
+            color: var(--primary);
         }
-        .card {
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 20px;
-            background: #ffffff;
+        .methodology-section ul {
+            margin: 5px 0 0 0;
+            padding-left: 20px;
         }
         .form-group {
             margin-bottom: 15px;
@@ -54,290 +58,172 @@
         label {
             display: block;
             font-weight: 600;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             font-size: 14px;
         }
-        input, select {
+        input[type="text"], input[type="number"] {
             width: 100%;
             padding: 10px;
-            border: 1px solid var(--border);
+            border: 1px solid #cbd5e1;
             border-radius: 6px;
             box-sizing: border-box;
-            font-size: 14px;
+            font-size: 15px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
         }
         button {
-            background-color: var(--secondary);
+            width: 100%;
+            background-color: var(--primary);
             color: white;
             border: none;
             padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
             border-radius: 6px;
             cursor: pointer;
-            font-weight: bold;
-            width: 100%;
-            font-size: 14px;
-        }
-        button:hover { background-color: #2563eb; }
-        
-        /* Estilos del Mapa de Calor */
-        .matrix-grid {
-            display: grid;
-            grid-template-columns: 40px repeat(3, 1fr);
-            gap: 5px;
-            text-align: center;
+            transition: background 0.2s;
             margin-top: 10px;
         }
-        .matrix-cell {
-            aspect-ratio: 1.5;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: white;
-            border-radius: 4px;
-            font-size: 12px;
-            padding: 5px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+        button:hover {
+            background-color: var(--secondary);
         }
-        .cell-label {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 12px;
-        }
-        .axis-title-y {
-            writing-mode: vertical-lr;
-            transform: rotate(180deg);
-            text-align: center;
-            font-weight: bold;
-            grid-row: span 3;
-            align-self: center;
-        }
-        .bg-bajo { background-color: var(--bajo); }
-        .bg-medio { background-color: var(--medio); color: #1e293b; text-shadow: none; }
-        .bg-critico { background-color: var(--critico); }
-        
-        /* Tabla de riesgos */
-        .table-wrapper {
+        .results-box {
             margin-top: 25px;
-            overflow-x: auto;
+            padding: 20px;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            display: none;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
+        .results-box h2 {
+            margin-top: 0;
+            font-size: 18px;
+            color: var(--primary);
         }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
         }
-        th { background-color: var(--light); }
-        .badge {
-            padding: 4px 8px;
-            border-radius: 4px;
+        .metric:last-child {
+            border-bottom: none;
+        }
+        .metric-val {
             font-weight: bold;
-            font-size: 12px;
-            display: inline-block;
+            color: var(--primary);
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Administración Sencilla de Riesgos de Sistemas</h1>
-    <p style="color:#64748b; font-size:14px; margin-bottom:20px;">
-        Identifica los riesgos de tu infraestructura o aplicación. Define su <strong>Impacto</strong> y <strong>Probabilidad</strong> para mapearlos dinámicamente en la matriz de calor.
-    </p>
+    <h1>Simulador de Monte Carlo Sencillo</h1>
+    
+    <div class="methodology-section">
+        <h2>Breve Descripción Metodológica</h2>
+        <p>
+            La <strong>Simulación de Monte Carlo</strong> es un método cuantitativo que modela la incertidumbre transformando variables rígidas en rangos probabilísticos. En auditoría informática, se utiliza la <strong>Distribución Triangular</strong> basada en tres escenarios estimados por el experto:
+        </p>
+        <ul>
+            <li><strong>Mínimo:</strong> El impacto económico más bajo en condiciones optimistas.</li>
+            <li><strong>Más Probable:</strong> El valor que ocurre con mayor frecuencia (Moda).</li>
+            <li><strong>Máximo:</strong> El peor impacto financiero posible (Escenario Catastrófico).</li>
+        </ul>
+        <p style="margin-bottom:0; margin-top:8px;">
+            Al presionar el botón, el algoritmo genera de manera inmediata <strong>1,000 iteraciones aleatorias</strong> aplicando la función inversa acumulada para proyectar el comportamiento financiero global del riesgo evaluado.
+        </p>
+    </div>
 
-    <div class="layout">
-        <div class="card">
-            <h2>1. Registrar Nuevo Riesgo</h2>
-            <div class="form-group">
-                <label for="risk-title">Descripción del Riesgo / Amenaza:</label>
-                <input type="text" id="risk-title" placeholder="Ej. Acceso no autorizado a Base de Datos (MFA inactivo)" required>
-            </div>
-            <div class="form-group">
-                <label for="risk-impact">Nivel de Impacto (Severidad del daño):</label>
-                <select id="risk-impact">
-                    <option value="1">1 - Bajo (Daño operativo menor)</option>
-                    <option value="2">2 - Medio (Afecta servicios temporalmente)</option>
-                    <option value="3">3 - Alto (Pérdida crítica de datos / Caída total)</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="risk-prob">Probabilidad de Ocurrencia:</label>
-                <select id="risk-prob">
-                    <option value="1">1 - Baja (Raro o poco frecuente)</option>
-                    <option value="2">2 - Media (Posible, ha ocurrido antes)</option>
-                    <option value="3">3 - Alta (Casi seguro o recurrente)</option>
-                </select>
-            </div>
-            <button onclick="agregarRiesgo()">Agregar y Evaluar Riesgo</button>
+    <div class="form-group">
+        <label for="risk-name">Nombre del Riesgo Tecnológico:</label>
+        <input type="text" id="risk-name" placeholder="Ej. Fuga de datos / Caída del servidor de producción">
+    </div>
+
+    <div class="grid-3">
+        <div class="form-group">
+            <label for="val-min">Impacto Mínimo ($):</label>
+            <input type="number" id="val-min" value="1000">
         </div>
-
-        <div class="card">
-            <h2>2. Mapa de Calor Interactiva (Matriz 3x3)</h2>
-            <div class="matrix-grid">
-                <div class="axis-title-y">Impacto (Severidad)</div>
-                <div class="cell-label">Alto (3)</div>
-                <div class="matrix-cell bg-medio" id="cell-3-1">Medio<br><span id="count-3-1">(0)</span></div>
-                <div class="matrix-cell bg-critico" id="cell-3-2">Crítico<br><span id="count-3-2">(0)</span></div>
-                <div class="matrix-cell bg-critico" id="cell-3-3">Crítico<br><span id="count-3-3">(0)</span></div>
-
-                <div class="cell-label">Medio (2)</div>
-                <div class="matrix-cell bg-bajo" id="cell-2-1">Bajo<br><span id="count-2-1">(0)</span></div>
-                <div class="matrix-cell bg-medio" id="cell-2-2">Medio<br><span id="count-2-2">(0)</span></div>
-                <div class="matrix-cell bg-critico" id="cell-2-3">Crítico<br><span id="count-2-3">(0)</span></div>
-
-                <div class="cell-label">Bajo (1)</div>
-                <div class="matrix-cell bg-bajo" id="cell-1-1">Bajo<br><span id="count-1-1">(0)</span></div>
-                <div class="matrix-cell bg-bajo" id="cell-1-2">Bajo<br><span id="count-1-2">(0)</span></div>
-                <div class="matrix-cell bg-medio" id="cell-1-3">Medio<br><span id="count-1-3">(0)</span></div>
-
-                <div></div><div></div>
-                <div class="cell-label">Baja (1)</div>
-                <div class="cell-label">Media (2)</div>
-                <div class="cell-label">Alta (3)</div>
-            </div>
-            <div style="text-align: center; font-weight: bold; margin-top: 5px; font-size: 13px;">Probabilidad de Ocurrencia</div>
+        <div class="form-group">
+            <label for="val-probable">Más Probable ($):</label>
+            <input type="number" id="val-probable" value="5000">
+        </div>
+        <div class="form-group">
+            <label for="val-max">Impacto Máximo ($):</label>
+            <input type="number" id="val-max" value="20000">
         </div>
     </div>
 
-    <div class="table-wrapper card" style="margin-top:30px;">
-        <h2>3. Inventario de Riesgos Registrados</h2>
-        <table id="risk-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Descripción del Riesgo</th>
-                    <th>Probabilidad</th>
-                    <th>Impacto</th>
-                    <th>Criticidad (P x I)</th>
-                    <th>Estado / Prioridad</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr id="empty-row"><td colspan="6" style="text-align:center; color:#94a3b8;">No hay riesgos registrados aún.</td></tr>
-            </tbody>
-        </table>
+    <button onclick="ejecutarSimulacion()">Ejecutar 1,000 Simulaciones</button>
+
+    <div class="results-box" id="results">
+        <h2>Resultados del Análisis de Exposición</h2>
+        <div class="metric">
+            <span>Riesgo Analizado:</span>
+            <span class="metric-val" id="res-name">-</span>
+        </div>
+        <div class="metric">
+            <span>Impacto Promedio Esperado (Media):</span>
+            <span class="metric-val" id="res-media">$0.00</span>
+        </div>
+        <div class="metric">
+            <span>Escenario Crítico de Pérdida (Percentil 95):</span>
+            <span class="metric-val" id="res-p95">$0.00</span>
+        </div>
     </div>
 </div>
 
 <script>
-    let listaRiesgos = [];
-    let contadorId = 1;
+    function ejecutarSimulacion() {
+        const nombre = document.getElementById('risk-name').value || "Riesgo no especificado";
+        const min = parseFloat(document.getElementById('val-min').value);
+        const mod = parseFloat(document.getElementById('val-probable').value);
+        const max = parseFloat(document.getElementById('val-max').value);
 
-    function agregarRiesgo() {
-        const titulo = document.getElementById('risk-title').value.trim();
-        const impacto = parseInt(document.getElementById('risk-impact').value);
-        const probabilidad = parseInt(document.getElementById('risk-prob').value);
-
-        if (!titulo) {
-            alert("Por favor, ingrese una breve descripción para identificar el riesgo.");
+        // Validación técnica de los parámetros de orden obligatorios
+        if (isNaN(min) || isNaN(mod) || isNaN(max) || min > mod || mod > max) {
+            alert("Error matemático: Por favor valida que los valores sigan la regla (Mínimo ≤ Más Probable ≤ Máximo).");
             return;
         }
 
-        const score = impacto * probabilidad;
-        let prioridad = "Bajo";
-        let badgeClass = "bg-bajo";
+        const iteraciones = 1000;
+        let resultados = [];
+        let sumaTotal = 0;
 
-        // Criterio de clasificación del impacto del riesgo (Score máximo 9)
-        if (score >= 6 || (impacto === 3 && probabilidad >= 2) || (probabilidad === 3 && impacto >= 2)) {
-            prioridad = "Crítico";
-            badgeClass = "bg-critico";
-        } else if (score >= 3 || (impacto === 3 && probabilidad === 1) || (probabilidad === 3 && impacto === 1)) {
-            prioridad = "Medio";
-            badgeClass = "bg-medio";
-        }
+        // Bucle de muestreo aleatorio (Algoritmo Monte Carlo)
+        for (let i = 0; i < iteraciones; i++) {
+            let u = Math.random();
+            let corte = (mod - min) / (max - min);
+            let valorSimulado = 0;
 
-        const nuevoRiesgo = {
-            id: `R${String(contadorId).padStart(2, '0')}`,
-            titulo: titulo,
-            probabilidad: probabilidad,
-            impacto: impacto,
-            score: score,
-            prioridad: prioridad,
-            badgeClass: badgeClass
-        };
-
-        listaRiesgos.push(nuevoRiesgo);
-        contadorId++;
-
-        // Limpiar el campo de texto
-        document.getElementById('risk-title').value = "";
-
-        actualizarTabla();
-        actualizarMapaDeCalor();
-    }
-
-    function actualizarTabla() {
-        const tbody = document.querySelector('#risk-table tbody');
-        tbody.innerHTML = "";
-
-        if (listaRiesgos.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#94a3b8;">No hay riesgos registrados aún.</td></tr>`;
-            return;
-        }
-
-        // Mostrar los riesgos ordenados de mayor a menor impacto/criticidad
-        const riesgosOrdenados = [...listaRiesgos].sort((a, b) => b.score - a.score);
-
-        riesgosOrdenados.forEach(r => {
-            const fila = document.createElement('tr');
-            fila.innerHTML = `
-                <td><strong>${r.id}</strong></td>
-                <td>${r.titulo}</td>
-                <td>${r.probabilidad}</td>
-                <td>${r.impacto}</td>
-                <td><strong>${r.score}</strong> / 9</td>
-                <td><span class="badge ${r.badgeClass}">${r.prioridad}</span></td>
-            `;
-            tbody.appendChild(fila);
-        });
-    }
-
-    function actualizarMapaDeCalor() {
-        // Reiniciar todos los contadores de las celdas a cero
-        for (let i = 1; i <= 3; i++) {
-            for (let p = 1; p <= 3; p++) {
-                document.getElementById(`count-${i}-${p}`).innerText = "(0)";
-                document.getElementById(`cell-${i}-${p}`).replaceChildren(
-                    document.createTextNode(obtenerTextoBaseCelda(i, p)),
-                    document.createElement('br'),
-                    document.getElementById(`count-${i}-${p}`)
-                );
+            if (u < corte) {
+                valorSimulado = min + Math.sqrt(u * (max - min) * (mod - min));
+            } else {
+                valorSimulado = max - Math.sqrt((1 - u) * (max - min) * (max - mod));
             }
+
+            resultados.push(valorSimulado);
+            sumaTotal += valorSimulado;
         }
 
-        // Agrupar y mapear los identificadores de riesgos (ej. R01, R02) en sus coordenadas correspondientes
-        let mapeoCelda = {};
-        listaRiesgos.forEach(r => {
-            const coord = `${r.impacto}-${r.probabilidad}`;
-            if (!mapeoCelda[coord]) mapeoCelda[coord] = [];
-            mapeoCelda[coord].push(r.id);
-        });
+        // Ordenamiento y extracción de indicadores clave
+        const media = sumaTotal / iteraciones;
+        resultados.sort((a, b) => a - b);
+        const p95 = resultados[Math.floor(iteraciones * 0.95) - 1];
 
-        // Modificar visualmente las celdas con la cantidad e IDs de los riesgos mapeados
-        for (const coord in mapeoCelda) {
-            const [i, p] = coord.split('-');
-            const ids = mapeoCelda[coord];
-            const countSpan = document.getElementById(`count-${i}-${p}`);
-            
-            countSpan.innerText = `(${ids.length})`;
-            
-            const cell = document.getElementById(`cell-${i}-${p}`);
-            cell.innerHTML = `<strong>${obtenerTextoBaseCelda(i, p)}</strong><br><span style="font-size:10px; opacity:0.9;">${ids.join(', ')}</span><br>`;
-            cell.appendChild(countSpan);
-        }
+        // Renderizado dinámico en la página
+        document.getElementById('res-name').innerText = nombre;
+        document.getElementById('res-media').innerText = formatearMoneda(media);
+        document.getElementById('res-p95').innerText = formatearMoneda(p95);
+        document.getElementById('results').style.display = 'block';
     }
 
-    function obtenerTextoBaseCelda(i, p) {
-        const score = i * p;
-        if (score >= 6 || (i == 3 && p == 2) || (p == 3 && i == 2)) return "Crítico";
-        if (score >= 3 || (i == 3 && p == 1) || (p == 3 && i == 1)) return "Medio";
-        return "Bajo";
+    function formatearMoneda(valor) {
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(valor);
     }
 </script>
 
